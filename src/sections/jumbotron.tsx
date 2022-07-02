@@ -11,7 +11,10 @@ import Joi from "joi";
   }
 
   const schema = Joi.object({
-    email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'org'] } }),
+    email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'org'] } }).messages({
+      'string.empty': 'Email Address is required',
+      'string.email': 'Please enter a valid email address.'
+    }),
   });
   
 const Jumbotron = () => {
@@ -25,7 +28,6 @@ const Jumbotron = () => {
   });
 
   const subscribe = async (payload: IFormInput) => {
-    console.log(payload);
     console.log(errors);
     if ('email' in errors) return;
     else {
