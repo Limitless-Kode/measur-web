@@ -1,8 +1,63 @@
-import React from 'react'
+import React, {useState} from 'react'
+import { useForm } from "react-hook-form";
 import Image from 'next/image'
-import { FiArrowRight, FiMail } from 'react-icons/fi';
+import { FiArrowRight, FiCheck, FiLoader, FiMail } from 'react-icons/fi';
+import { joiResolver } from "@hookform/resolvers/joi";
+import Joi from "joi";
 
+
+  interface IFormInput {
+    email: string;
+  }
+
+  const schema = Joi.object({
+    email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'org'] } }),
+  });
+  
 const Jumbotron = () => {
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [placeholder, setPlaceholder] = useState('you@email.com');
+  const [subscriptionState, setSubscriptionState] = useState({success: false, message: ''});
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<IFormInput>({
+    resolver: joiResolver(schema),
+    reValidateMode: 'onChange',
+  });
+
+  const subscribe = async (payload: IFormInput) => {
+    console.log(payload);
+    console.log(errors);
+    if ('email' in errors) return;
+    else {
+      setIsSubscribing(true);
+      try {
+        const request = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+        
+        const response = await request.json();
+        setSubscriptionState(response);
+        setPlaceholder(response.message);
+        reset();
+      } catch (e: any) {
+        setPlaceholder(e.message);
+      }
+
+      setIsSubscribing(false);
+
+
+      setTimeout(() => {
+        setSubscriptionState({success: false, message: ''});
+        setPlaceholder('you@email.com');
+      }, 3000);
+
+      
+    }
+  }
   return (
     <div style={{background: 'linear-gradient(293.5deg, #FA0FF0 -15.93%, #2B0FD4 94.34%)'}} className={`flex flex-col items-center justify-center min-h-[100vh] w-full`}>
       <div className='relative w-[80vw]'>
@@ -18,7 +73,8 @@ const Jumbotron = () => {
             <p className='text-[16px] md:text-[20px] leading-[30px]'>Leave your email and we would alert you immediately we deploy the first version.</p>
           </div>
 
-          <div className='relative md:w-[25vw] h-[60px] rounded-full bg-white flex justify-start pl-[20px] items-center mt-[30px]'>
+          <form onSubmit={handleSubmit(subscribe)}>
+            <div className='relative md:w-[25vw] h-[60px] rounded-full bg-white flex justify-start pl-[20px] items-center mt-[30px]'>
             <svg width='0' height='0'>
               <linearGradient id='blue-gradient' x1='100%' y1='100%' x2='0%' y2='0%'>
                 <stop stopColor='#2B0FD4' offset='0%' />
@@ -26,18 +82,24 @@ const Jumbotron = () => {
               </linearGradient>
             </svg>
             <FiMail style={{ stroke: 'url(#blue-gradient)' }} size={24} />
-            <input type='email' placeholder='you@email.com' className='placeholder:text-slate-400 text-grey-200 font-bold ml-[10px] w-[50vw] md:w-[18vw] h-[60px] rounded-full outline-none' />
+            <input {...register('email', {required: true})} type='email' placeholder={placeholder} className='placeholder:text-slate-400 text-grey-200 font-bold ml-[10px] w-[50vw] md:w-[18vw] h-[60px] rounded-full outline-none' />
             <button 
-              style={{ background: 'linear-gradient(293.5deg, #FA0FF0 -15.93%, #2B0FD4 94.34%)' }}
+              type='submit'
+              disabled={isSubscribing}
+            style={{ background: 'linear-gradient(293.5deg, #FA0FF0 -15.93%, #2B0FD4 94.34%)' }}
               className='absolute flex items-center text-white justify-center right-[10px] h-[45px] w-[45px] rounded-full'>
-                <FiArrowRight size={24} />
+              {
+                (subscriptionState.success && !isSubscribing) ? <FiCheck size={24} /> : (isSubscribing) ? <FiLoader size={24} className='animate-spin' /> : <FiArrowRight size={24} />
+              }
               </button>
           </div>
+          {errors.email && <p className='text-white mt-2 ml-12'>{errors.email.message}</p>}
+          </form>
         </div>
 
         <div className='hidden md:block relative h-[100vh] w-[30vw]'>
           <div className='absolute top-0 w-[100%] h-[90vh]'>
-            <Image src={'/assets/images/hand.png'} layout='fill' alt='Email Image' />
+            <Image src={'/assets/images/hand.png'} className='object-contain' layout='fill' alt='Email Image' />
           </div>
         </div>
       </div>
