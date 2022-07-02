@@ -93,7 +93,7 @@ const Jumbotron = () => {
               }
               </button>
           </div>
-          {errors.email && <p className='text-white mt-2 ml-12'>{errors.email.message}</p>}
+          {errors.email && <p className='text-white mt-2 ml-5'>{errors.email.message}</p>}
           </form>
         </div>
 
