@@ -62,14 +62,14 @@ const Jumbotron = () => {
   }
   return (
     <div style={{background: 'linear-gradient(293.5deg, #FA0FF0 -15.93%, #2B0FD4 94.34%)'}} className={`flex flex-col items-center justify-center min-h-[100vh] w-full`}>
-      <div className='relative w-[80vw]'>
+      <div className='relative md:w-[70vw] w-[80vw]'>
         <div className='absolute top-[30px] left-[0px] w-[96px] h-[56px]'>
         <Image src={'/assets/images/logo.png'} layout='fill' alt='Measur Logo' />
       </div>
       </div>
       <div className='flex items-center justify-center min-h-[100vh] w-full'>
 
-        <div className='w-[80vw] md:w-[50vw]'>
+        <div className='w-[80vw] md:w-[40vw]'>
           <div className='md:w-[25vw] text-white'>
             <h1 className='text-[36px] md:text-[48px] leading-[46px] md:leading-[72px] font-bold md:w-[30vw] mb-[16px]'>We are still developing the measur app.</h1>
             <p className='text-[16px] md:text-[20px] leading-[30px]'>Leave your email and we would alert you immediately we deploy the first version.</p>
@@ -99,9 +99,9 @@ const Jumbotron = () => {
           </form>
         </div>
 
-        <div className='hidden md:block relative h-[100vh] w-[30vw]'>
-          <div className='absolute top-0 w-[100%] h-[90vh]'>
-            <Image src={'/assets/images/hand.png'} className='object-contain' layout='fill' alt='Email Image' />
+        <div className='hidden md:flex items-center relative h-[100vh] w-[30vw]'>
+          <div className='relative w-[100%] h-[100vh]'>
+            <Image src={'/assets/images/siting.png'} className='object-contain' layout='fill' alt='Email Image' />
           </div>
         </div>
       </div>
